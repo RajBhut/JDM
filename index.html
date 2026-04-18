@@ -701,6 +701,11 @@
         opacity: 1;
       }
 
+      /* EMAIL DRAFT CARD */
+      .email-draft-card {
+        height: 100%;
+      }
+
       /* MISC */
       .search-bar {
         display: flex;
@@ -745,6 +750,57 @@
         margin-top: 2px;
       }
 
+      /* MOBILE TOP BAR */
+      .mobile-topbar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border);
+        z-index: 200;
+        align-items: center;
+        padding: 0 16px;
+        gap: 12px;
+      }
+      .hamburger {
+        background: none;
+        border: none;
+        color: var(--text);
+        font-size: 24px;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .mobile-logo {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mobile-logo i {
+        color: var(--accent2);
+        font-size: 20px;
+      }
+
+      /* SIDEBAR OVERLAY */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 150;
+      }
+      .sidebar-overlay.visible {
+        display: block;
+      }
+
       @media (max-width: 900px) {
         .stats-grid {
           grid-template-columns: 1fr 1fr;
@@ -756,10 +812,124 @@
           grid-template-columns: 1fr 1fr;
         }
       }
+
+      @media (max-width: 768px) {
+        /* Show mobile top bar, hide desktop sidebar by default */
+        .mobile-topbar {
+          display: flex;
+        }
+
+        /* Sidebar slides in from left */
+        .sidebar {
+          transform: translateX(-100%);
+          transition: transform 0.25s ease;
+          z-index: 300;
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+
+        /* Main content takes full width, pushed down by topbar */
+        .main {
+          margin-left: 0;
+          padding: 24px 16px;
+          padding-top: calc(56px + 24px);
+        }
+
+        .page-title {
+          font-size: 22px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        /* Tracker table: horizontal scroll */
+        .tracker-card {
+          overflow-x: auto;
+        }
+        .tracker-table {
+          min-width: 640px;
+        }
+
+        /* Search bar wraps */
+        .search-bar {
+          flex-wrap: wrap;
+        }
+        .search-bar input {
+          max-width: 100%;
+          flex: 1 1 200px;
+        }
+
+        /* Resume tabs wrap */
+        .resume-tabs {
+          width: 100%;
+          flex-wrap: wrap;
+        }
+
+        /* flex-between stacks on mobile for page headers with buttons */
+        .page-header.flex-between {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        /* Email draft card: height auto on mobile */
+        .email-draft-card {
+          height: auto;
+        }
+
+        .bar-label {
+          width: 72px;
+          font-size: 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          padding: 16px 12px;
+          padding-top: calc(56px + 16px);
+        }
+        .page-title {
+          font-size: 20px;
+        }
+        .stat-value {
+          font-size: 28px;
+        }
+        .resume-block {
+          padding: 20px 16px;
+        }
+        .card {
+          padding: 16px;
+        }
+        .bar-label {
+          width: 60px;
+        }
+      }
     </style>
   </head>
   <body>
-    <div class="sidebar">
+    <!-- Mobile top bar -->
+    <div class="mobile-topbar">
+      <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">
+        <i class="ph ph-list"></i>
+      </button>
+      <div class="mobile-logo"><i class="ph-fill ph-briefcase"></i> JobHunt</div>
+    </div>
+
+    <!-- Sidebar overlay (closes sidebar when tapped) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <div class="sidebar" id="sidebar">
       <div class="logo"><i class="ph-fill ph-briefcase"></i> JobHunt</div>
       <nav class="nav">
         <div class="nav-item active" onclick="showSection('dashboard')">
@@ -954,7 +1124,7 @@
             </div>
           </div>
           <div>
-            <div class="card" style="height: 100%">
+            <div class="card email-draft-card">
               <div class="card-title">
                 <i class="ph ph-envelope-open"></i> Draft
               </div>
@@ -1047,7 +1217,7 @@
           </button>
         </div>
 
-        <div class="card" style="padding: 0; overflow: hidden">
+        <div class="card tracker-card" style="padding: 0; overflow: hidden">
           <table class="tracker-table">
             <thead>
               <tr>
@@ -1880,6 +2050,20 @@
         localStorage.setItem("goals", JSON.stringify(goals));
       }
 
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebar-overlay");
+        const btn = document.querySelector(".hamburger");
+        const isOpen = sidebar.classList.toggle("open");
+        overlay.classList.toggle("visible", isOpen);
+        btn.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebar-overlay").classList.remove("visible");
+        document.querySelector(".hamburger").setAttribute("aria-label", "Open menu");
+      }
+
       function showSection(id) {
         document
           .querySelectorAll(".section")
@@ -1901,6 +2085,7 @@
         items[map[id]].classList.add("active");
         if (id === "analytics") renderAnalytics();
         if (id === "dashboard") renderDashboard();
+        closeSidebar();
         if (id === "tracker") renderTracker();
         if (id === "goals") renderGoals();
       }
