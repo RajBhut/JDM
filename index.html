@@ -701,6 +701,11 @@
         opacity: 1;
       }
 
+      /* EMAIL DRAFT CARD */
+      .email-draft-card {
+        height: 100%;
+      }
+
       /* MISC */
       .search-bar {
         display: flex;
@@ -845,7 +850,7 @@
 
         /* Tracker table: horizontal scroll */
         .tracker-card {
-          overflow-x: auto !important;
+          overflow-x: auto;
         }
         .tracker-table {
           min-width: 640px;
@@ -872,9 +877,9 @@
           gap: 12px;
         }
 
-        /* Email section: draft card height auto */
-        #email .card[style*="height: 100%"] {
-          height: auto !important;
+        /* Email draft card: height auto on mobile */
+        .email-draft-card {
+          height: auto;
         }
 
         .bar-label {
@@ -1119,7 +1124,7 @@
             </div>
           </div>
           <div>
-            <div class="card" style="height: 100%">
+            <div class="card email-draft-card">
               <div class="card-title">
                 <i class="ph ph-envelope-open"></i> Draft
               </div>
@@ -2048,12 +2053,15 @@
       function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");
         const overlay = document.getElementById("sidebar-overlay");
-        sidebar.classList.toggle("open");
-        overlay.classList.toggle("visible");
+        const btn = document.querySelector(".hamburger");
+        const isOpen = sidebar.classList.toggle("open");
+        overlay.classList.toggle("visible", isOpen);
+        btn.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
       }
       function closeSidebar() {
         document.getElementById("sidebar").classList.remove("open");
         document.getElementById("sidebar-overlay").classList.remove("visible");
+        document.querySelector(".hamburger").setAttribute("aria-label", "Open menu");
       }
 
       function showSection(id) {
